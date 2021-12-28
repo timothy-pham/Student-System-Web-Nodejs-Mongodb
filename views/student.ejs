@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
+    <script src="/javascripts/main.js"></script>
+    <link rel="stylesheet" href="/stylesheets/style.css">
+    <title>Student Page</title>
+</head>
+
+<body>
+    <div class="Cập nhật thông tin sinh viên">
+        <form id="uploadForm" enctype="multipart/form-data" action="/student" method="post">
+            <div class="image-upload">
+                <label for="file-input">
+                    <img src="<%=student.avatar %>" id="avatar" />
+                </label>
+                <input id="file-input" type="file" name="userPhoto" onchange="form.submit()" />
+            </div>
+            <span id="status"></span>
+        </form>
+        Họ và tên:<input type="text" id="fullname" value="<%=student.fullname %>"><br>
+        Lớp:<input type="text" id="class" value="<%=student.class %>"><br>
+        Khoa:<input type="text" id="falcuty" value="<%=student.falcuty %>"><br>
+        <button type="submit" onclick="updateStudent()">Cập nhật</button>
+    </div>
+</body>
+
+</html>

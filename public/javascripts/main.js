@@ -1,4 +1,4 @@
-//----------Login
+//----------LOGIN
 function login() {
     $.ajax({
         url: '/login',
@@ -58,9 +58,9 @@ function getCookie(cname) {
     }
     return "";
 }
-//--------login-end
+//----------LOGIN END
 
-//----------admin
+//----------ADMIN
 
 function createAccount() {
     var checkedValue = document.getElementsByName('permission');
@@ -111,7 +111,7 @@ window.onclick = function (event) {
         }
     }
 }
-//----------admin end
+//----------ADMIN END
 
 //----------Manager
 function changePassword() {
@@ -133,3 +133,28 @@ function changePassword() {
     })
 }
 //----------Manager END
+
+//----------STUDENT
+//update ảnh
+//update thông tin
+function updateStudent() {
+    $.ajax({
+        url: '/student/updateStudent',
+        type: 'put',
+        data: {
+            fullname: $('#fullname').val(),
+            class: $('#class').val(),
+            falcuty: $('#falcuty').val()
+        }
+    }).then(data => {
+        if (data.success) {
+            alert("Cập nhật thông tin thành công")
+            window.location.href = "/student"
+        } else {
+            alert("Cập nhật thông tin thất bại")
+        }
+    }).catch(err => {
+        console.log(err)
+    })
+}
+//----------STUDENT END

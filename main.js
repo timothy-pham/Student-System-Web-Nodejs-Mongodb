@@ -35,6 +35,7 @@ app.use('/', require('./routes/index'))
 app.use('/login', require('./routes/login'))
 app.use('/admin', require('./routes/admin'))
 app.use('/manager', require('./routes/manager'))
+app.use('/student', require('./routes/student'))
 
 //run server
 app.listen(process.env.PORT, () => console.log(`Server is running on port http://localhost:${process.env.PORT}`))

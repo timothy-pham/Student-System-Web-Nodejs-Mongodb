@@ -6,8 +6,8 @@ const Comment = new mongoose.Schema({
         required: true
     },
     createDate: {
-        type: Date,
-        default: Date.now()
+        type: String,
+        default: new Date().toLocaleString()
     },
     user: {
         type: String,

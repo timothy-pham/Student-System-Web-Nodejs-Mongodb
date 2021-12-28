@@ -5,8 +5,8 @@ const Notification = new mongoose.Schema({
         type: String,
     },
     createDate: {
-        type: Date,
-        default: Date.now()
+        type: String,
+        default: new Date().toLocaleString()
     },
     falcuty: {
         type: String,
@@ -21,5 +21,7 @@ const Notification = new mongoose.Schema({
         type: String,
     }]
 })
+
+//mongoose.model('Notification', Notification).create({ notification: "TEST" })
 
 module.exports = mongoose.model('Notification', Notification)

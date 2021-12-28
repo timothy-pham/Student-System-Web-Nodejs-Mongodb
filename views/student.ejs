@@ -18,9 +18,8 @@
                 <label for="file-input">
                     <img src="<%=student.avatar %>" id="avatar" />
                 </label>
-                <input id="file-input" type="file" name="userPhoto" onchange="form.submit()" />
+                <input id="file-input" type="file" name="userPhoto" onchange="form.submit()" accept="image/*" />
             </div>
-            <span id="status"></span>
         </form>
         Họ và tên:<input type="text" id="fullname" value="<%=student.fullname %>"><br>
         Lớp:<input type="text" id="class" value="<%=student.class %>"><br>

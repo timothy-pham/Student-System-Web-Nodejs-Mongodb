@@ -71,7 +71,7 @@ router.post('/', checkLogin, checkStudent, function (req, res) {
         } else if (err) {
             console.log("An unknown error occurred when uploading." + err);
         } else {
-            let url = "/images/" + req.file.filename
+            let url = "images/avatar/" + req.file.filename
             Users.updateOne({ _id: req.data._id }, { $set: { avatar: url } }, (err, status) => {
                 if (err) {
                     console.log(err)

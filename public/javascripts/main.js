@@ -158,3 +158,86 @@ function updateStudent() {
     })
 }
 //----------STUDENT END
+
+//----------INDEX-POST
+function addPost() {
+    var caption = $('#caption').val();
+    var video = $('#video').val();
+    var image = document.getElementById("image").files;
+
+    var formData = new FormData();
+    formData.append('caption', caption);
+    formData.append('video', video);
+    formData.append('image', image[0])
+
+    $.ajax({
+        url: '/addPost',
+        type: 'post',
+        data: formData,
+        cache: false,
+        contentType: false,
+        processData: false,
+    }).then(data => {
+        if (data.success) {
+            alert("Cập nhật thông tin thành công")
+            $('#caption').val('')
+            $('#video').val('');
+            $('#image').val('');
+
+            $('#imagePreview').css("display", "none")
+            $('#imagePreview').attr("src", "")
+        } else {
+            alert("Cập nhật thông tin thất bại")
+        }
+    }).catch(err => {
+        console.log(err)
+    })
+}
+function previewImage(self) {
+    var file = self.files;
+    if (file.length > 0) {
+        var fileReader = new FileReader();
+
+        fileReader.onload = function (event) {
+            document.getElementById("imagePreview").style.display = "";
+            document.getElementById("imagePreview").setAttribute("src", event.target.result);
+        }
+        fileReader.readAsDataURL(file[0]);
+    }
+}
+function previewVideo() {
+    let url = document.getElementById("video").value;
+    html = checkYoutubeUrl(url)
+    document.getElementById('previewVideo').innerHTML = html
+}
+
+function checkYoutubeUrl(url) {
+    if (url.includes("https://www.youtube.com/embed/")) {
+        var html = '<iframe width="560" height="315" src="' + url + '" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
+        return html;
+    } else {
+        if (url.includes("&list=")) {
+            var idVideos = url.split("v=");
+            var idVideoList = idVideos[idVideos.length - 1];
+            idVideos = idVideoList.split("&list=")
+            var idVideo = idVideos[0];
+
+            url = "https://www.youtube.com/embed/" + idVideo;
+            var html = '<iframe width="560" height="315" src="' + url + '" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
+            return html;
+        } else {
+            if (url.includes("https://www.youtube.com/watch?v=")) {
+                var idVideos = url.split("v=");
+                var idVideo = idVideos[idVideos.length - 1]
+
+                url = "https://www.youtube.com/embed/" + idVideo;
+                var html = '<iframe width="560" height="315" src="' + url + '" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
+                return html;
+            }
+            else {
+                return '';
+            }
+        }
+    }
+}
+//----------INDEX-POST-END

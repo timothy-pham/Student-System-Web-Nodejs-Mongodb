@@ -12,9 +12,20 @@
 </head>
 
 <body>
-    Home Page
-
     <button onclick="logout()">Logout</button>
+    <div class="tạo bài viết mới">
+        <h3>Đăng bài</h3>
+        <textarea name="caption" id="caption" cols="10" rows="2" placeholder="Bạn đang nghĩ gì?"></textarea><br>
+        <img style="display: none;" id="imagePreview"><br>
+        <div id="previewVideo"></div><br>
+        <input type="file" name="image" id="image" accept="image/*" onchange="previewImage(this);"><br>
+        <input type="text" placeholder="Nhập đường dẫn video youtube của bạn" id="video" name="video"
+            oninput="previewVideo()"><br>
+        <button type="submit" onclick="addPost()">Post</button>
+    </div>
+    <div class="timeline">
+
+    </div>
 </body>
 
 </html>

@@ -44,6 +44,7 @@ router.get('/', checkLogin, checkAdmin, (req, res) => {
         res.render('admin', { category: category })
     }).catch(err => {
         console.log(err)
+        res.render('admin')
     })
 })
 

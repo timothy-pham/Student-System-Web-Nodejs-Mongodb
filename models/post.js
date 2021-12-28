@@ -1,20 +1,25 @@
 const mongoose = require('mongoose')
 const Post = new mongoose.Schema({
-    post: {
-        type: String,
-        required: true
+    caption: {
+        type: String
     },
     image: {
         type: String
     },
+    video: {
+        type: String
+    },
     createDate: {
-        type: Date,
-        default: Date.now()
+        type: String,
+        default: new Date().toLocaleString()
     },
     user: {
-        type: String,
-        required: true
+        type: String
+    },
+    fullname: {
+        type: String
     }
 })
+
 
 module.exports = mongoose.model('Post', Post)

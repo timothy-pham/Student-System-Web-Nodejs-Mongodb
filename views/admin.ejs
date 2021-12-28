@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
+    <script src="/javascripts/main.js"></script>
+    <link rel="stylesheet" href="/stylesheets/style.css">
+    <title>Admin Page</title>
+</head>
+
+<body>
+    <div class="tao tai khoan teaches">
+        <h3>Tạo tài khoản phòng/khoa</h3>
+        Username:<input type="text" id="username"><br>
+        Password:<input type="password" id="password"><br>
+        Tên Phòng Ban: <input type="text" id="fullname"><br>
+
+        <div class="dropdown">
+            <button onclick="myFunction()" class="dropbtn">Dropdown</button>
+            <div id="myDropdown" class="dropdown-content">
+                <% for(let i=0; i < category.length; i++){ %>
+                    <input class="categoryCheckbox" type="checkbox" value="<%=category[i] %>" name="permission">
+                    <%= category[i] %>
+                        <br>
+                        <% } %>
+            </div>
+        </div>
+        <button onclick="createAccount()">Create Account</button>
+    </div>
+</body>
+
+</html>

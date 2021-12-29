@@ -8,6 +8,7 @@
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
     <script src="/javascripts/main.js"></script>
     <link rel="stylesheet" href="/stylesheets/style.css">
+    <script src="ejs.js"></script>
     <title>Home Page</title>
 </head>
 
@@ -15,7 +16,7 @@
     <button onclick="logout()">Logout</button>
     <div class="tạo bài viết mới">
         <h3>Đăng bài</h3>
-        <textarea name="caption" id="caption" cols="10" rows="2" placeholder="Bạn đang nghĩ gì?"></textarea><br>
+        <textarea name="caption" id="caption" cols="100" rows="2" placeholder="Bạn đang nghĩ gì?"></textarea><br>
         <img style="display: none;" id="imagePreview"><br>
         <div id="previewVideo"></div><br>
         <input type="file" name="image" id="image" accept="image/*" onchange="previewImage(this);"><br>
@@ -24,8 +25,74 @@
         <button type="submit" onclick="addPost()">Post</button>
     </div>
     <div class="timeline">
+        <!-- <div class="post">
+            <div class="postOf">
+                Phạm Tiến Đạt
+            </div>
+            <div class="caption">
+                Bạn đang nghĩ gì?
+            </div>
+            <div class="attach">
+                <div class="video"><iframe width="560" height="315" src="https://www.youtube.com/embed/YeXOY4vNfEQ"
+                        title="YouTube video player" frameborder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowfullscreen></iframe></div>
+                <img class="image" src="/images/post/test2.png">
+            </div>
+            <div class="commentOfPost">
+                <div class="newComment">
+                    <textarea id="newComment" cols="50" rows="1"></textarea>
+                </div>
+                <div class="showComment">
+                    Xinh đẹp tuyệt vời
+                </div>
+            </div>
+        </div> -->
 
+        <div class="newPost">
+
+        </div>
+        <% for(let i=0; i < post.length; i++){ %>
+            <div class="post" id="id<%= post[i]._id %>">
+                <div class="postOf">
+                    <p>
+                        <%= post[i].fullname %>
+                    </p>
+                </div>
+                <div class="caption">
+                    <div class="caption-left">
+                        <p id="id<%=post[i]._id%>" class="caption">
+                            <%= post[i].caption %>
+                        </p>
+                        <input type="text" id="id<%=post[i]._id%>" style="display:none">
+                        <button onclick="unEditPost('<%=post[i]._id%>')" id="id<%=post[i]._id%>"
+                            style="display: none;">Huỷ</button>
+                    </div>
+                    <div class="caption-right">
+                        <% if(user._id.toString()===post[i].user){ %>
+                            <button onclick="editPost('<%=post[i]._id%>')">Sửa</button>
+                            <button onclick="deletePost('<%=post[i]._id%>')">Xoá</button>
+                            <% } %>
+                    </div>
+                </div>
+                <div class="attach">
+                    <div class="video">
+                        <%- post[i].video %>
+                    </div>
+                    <img class="image" src="<%= post[i].image %>">
+                </div>
+                <div class="commentOfPost">
+                    <div class="newComment">
+                        <textarea id="newComment" cols="50" rows="1"></textarea>
+                    </div>
+                    <div class="showComment">
+                        Xinh đẹp tuyệt vời
+                    </div>
+                </div>
+            </div>
+            <% } %>
     </div>
+
 </body>
 
 </html>

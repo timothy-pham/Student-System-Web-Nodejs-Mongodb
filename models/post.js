@@ -9,9 +9,13 @@ const Post = new mongoose.Schema({
     video: {
         type: String
     },
-    createDate: {
+    createTime: {
         type: String,
         default: new Date().toLocaleString()
+    },
+    createAt: {
+        type: String,
+        default: new Date().getTime()
     },
     user: {
         type: String

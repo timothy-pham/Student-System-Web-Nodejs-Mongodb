@@ -160,6 +160,8 @@ function updateStudent() {
 //----------STUDENT END
 
 //----------INDEX-POST
+
+//add a post
 function addPost() {
     var caption = $('#caption').val();
     var video = $('#video').val();
@@ -179,15 +181,57 @@ function addPost() {
         processData: false,
     }).then(data => {
         if (data.success) {
-            alert("Cập nhật thông tin thành công")
+            //off preview
             $('#caption').val('')
             $('#video').val('');
             $('#image').val('');
+            $('#previewVideo').html('')
 
             $('#imagePreview').css("display", "none")
             $('#imagePreview').attr("src", "")
+            let post = data.postResult
+            //add post nhưng ko refesh
+            var newPost = `<div class="post" id="id${post._id}">
+            <div class="postOf">
+                <p>
+                    ${post.fullname} 
+                </p>
+            </div>
+            <div class="caption">
+                <div class="caption-left">
+                    <p id="id${post._id}" class="caption">
+                        ${post.caption}
+                    </p>
+                    <input type="text" id="id${post._id}" style="display:none">
+                    <button onclick="unEditPost('${post._id}')" id="id${post._id}"
+                        style="display: none;">Huỷ</button>
+                </div>
+                <div class="caption-right">
+                    
+                        <button onclick="editPost('${post._id}')">Sửa</button>
+                        <button onclick="deletePost('${post._id}')">Xoá</button>
+
+                </div>
+            </div>
+            <div class="attach">
+                <div class="video">
+                ${post.video}
+                </div>
+                <img class="image" src="${post.image}">
+            </div>
+            <div class="commentOfPost">
+                <div class="newComment">
+                    <textarea id="newComment" cols="50" rows="1"></textarea>
+                </div>
+                <div class="showComment">
+                    Xinh đẹp tuyệt vời
+                </div>
+            </div>
+        </div>`
+            var curHtml = $('.newPost').html()
+            $('.newPost').html(newPost + curHtml)
         } else {
-            alert("Cập nhật thông tin thất bại")
+            alert(data.msg)
         }
     }).catch(err => {
         console.log(err)
@@ -238,6 +282,72 @@ function checkYoutubeUrl(url) {
                 return '';
             }
         }
+    }
+}
+
+//add a post end
+
+//edit and delete a post
+function unEditPost(id) {
+    $(`p#id${id}`).css("display", "block")
+    $(`input#id${id}`).css("display", "none")
+    $(`button#id${id}`).css("display", "none")
+}
+function editPost(id) {
+    //focus edit
+    $(`input#id${id}`).val($(`p#id${id}`).html().trim())
+    $(`p#id${id}`).css("display", "none")
+    $(`input#id${id}`).css("display", "block")
+    $(`button#id${id}`).css("display", "block")
+    $(`input#id${id}`).focus();
+    //unfocus
+
+    //Enter sau khi edit
+    $(`input#id${id}`).on('keyup', function (e) {
+        if (e.keyCode === 13) {
+
+            $.ajax({
+                url: '/updateCaption',
+                type: 'put',
+                data: {
+                    _id: id,
+                    caption: $(`input#id${id}`).val()
+                }
+            }).then(data => {
+                if (data.success) {
+                    alert("Chỉnh sửa bài viết thành công")
+                    $(`p#id${id}`).html($(`input#id${id}`).val())
+                    $(`p#id${id}`).css("display", "")
+                    $(`input#id${id}`).css("display", "none")
+                } else {
+                    alert(data.msg)
+                }
+            }).catch(err => {
+                console.log(err)
+            })
+        }
+    });
+}
+
+function deletePost(id) {
+    let result = confirm("Bạn chắc chắn muốn xoá bài viết này chứ?");
+    if (result === true) {
+        $.ajax({
+            url: '/deletePost',
+            type: 'delete',
+            data: {
+                _id: id,
+            }
+        }).then(data => {
+            if (data.success) {
+                alert("Xoá bài viết thành công")
+                $(`.post#id${id}`).remove();
+            } else {
+                alert("Xoá bài viết thất bại")
+            }
+        }).catch(err => {
+            console.log(err)
+        })
     }
 }
 //----------INDEX-POST-END

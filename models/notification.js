@@ -19,7 +19,7 @@ const Notification = new mongoose.Schema({
     },
     createAt: {
         type: String,
-        default: new Date().getTime()
+        default: Date.now()
     },
     user: {
         type: String,

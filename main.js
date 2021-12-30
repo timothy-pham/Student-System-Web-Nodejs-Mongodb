@@ -44,7 +44,9 @@ const { Server } = require("socket.io");
 const io = new Server(server);
 
 io.on('connection', (socket) => {
-
+    socket.on('connect', () => {
+        console.log('user disconnected');
+    });
     socket.on('disconnect', () => {
         console.log('user disconnected');
     });

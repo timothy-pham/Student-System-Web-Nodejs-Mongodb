@@ -79,7 +79,6 @@
                                                     <option value="<%= category[i].category %>">
                                                         <%= user.permission[i] %>
                                                     </option>
-
                                                     <% } } %>
                                     </select>
                                     <button type="button" class="btn btn-primary" onclick="addNotification()">Đăng
@@ -106,23 +105,28 @@
                                                         <p id="id<%=post[i]._id%>" class="caption">
                                                             <%= post[i].caption %>
                                                         </p>
-                                                        <input type="text" id="id<%=post[i]._id%>" style="display:none">
-                                                        <button onclick="unEditPost('<%=post[i]._id%>')"
-                                                            id="id<%=post[i]._id%>" style="display: none;">Huỷ</button>
+                                                        <input type="text" id="id<%=post[i]._id%>">
+                                                        <div class="button-confirm d-flex">
+                                                            <button onclick="unEditPost('<%=post[i]._id%>')"
+                                                                id="id<%=post[i]._id%>"
+                                                                class="m-2 btn-danger">Huỷ</button>
+                                                            <button onclick="confirmEditPost('<%=post[i]._id%>')"
+                                                                id="id<%=post[i]._id%>"
+                                                                class="m-2 btn-success">Lưu</button>
+                                                        </div>
+
                                                     </div>
                                                     <div class="caption-right">
-                                                        <div class="btn-group my-2 mx-2" role="group"
-                                                            aria-label="Basic mixed styles example">
-                                                            <% if(user._id.toString()===post[i].user ||
-                                                                user.roles==='admin' ){ %>
-                                                                <button type="button" class="btn btn-warning"
-                                                                    onclick="editPost('<%=post[i]._id%>')">Sửa</button>
-                                                                <button type="button" class="btn btn-danger"
-                                                                    onclick="deletePost('<%=post[i]._id%>')">Xoá</button>
 
-                                                                <% } %>
+                                                        <% if(user._id.toString()===post[i].user || user.roles==='admin'
+                                                            ){ %>
+                                                            <button type="button" class="btn btn-warning"
+                                                                onclick="editPost('<%=post[i]._id%>')">Sửa</button>
+                                                            <button type="button" class="btn btn-danger"
+                                                                onclick="deletePost('<%=post[i]._id%>')">Xoá</button>
 
-                                                        </div>
+                                                            <% } %>
+
 
                                                     </div>
                                                 </div>
@@ -136,11 +140,61 @@
                                                         <% } %>
                                                 </div>
                                                 <div class="commentOfPost">
-                                                    <div class="newComment">
-                                                        <textarea id="newComment" cols="50" rows="1"></textarea>
+                                                    <div class="newComment mx-5 d-flex">
+                                                        <input class="form-control" type="text" id="id<%=post[i]._id%>"
+                                                            placeholder="Viết bình luận...">
+                                                        <button class="btn btn-primary mx-2 "
+                                                            onclick="addComment('<%=post[i]._id%>')">Gửi</button>
                                                     </div>
-                                                    <div class="showComment">
-                                                        Xinh đẹp tuyệt vời
+                                                    <div class="showComment py-2" id="<%=post[i]._id%>">
+                                                        <div class="after-add-comment" id="id<%=post[i]._id%>">
+                                                        </div>
+                                                        <% for(let j=0; j<comment.length; j++){
+                                                            if(comment[j].postId===post[i]._id.toString()){ %>
+                                                            <div class="comment p-1"
+                                                                id="id<%= comment[j]._id.toString() %>">
+                                                                <div
+                                                                    class="comment-content border border-2 mt-2 mx-2 p-2 bg-light rounded-3">
+                                                                    <div class="comment-content-header d-flex">
+                                                                        <p class="fw-bolder my-0 fs-6">
+                                                                            <%= comment[j].fullname %>
+                                                                        </p>
+                                                                        <span class="time m-1 mb-0">
+                                                                            <%= comment[j].createTime %>
+                                                                        </span>
+                                                                        <div class="d-flex tool-comment">
+                                                                            <button
+                                                                                class="font-monospace mx-2 link-info bg-white p-0.5 border border-2 rounded-3"
+                                                                                onclick="editComment('<%=comment[j]._id.toString() %>')">
+                                                                                Sửa
+                                                                            </button>
+                                                                            <button
+                                                                                class="font-monospace link-danger bg-white p-0.5 border border-2 rounded-3"
+                                                                                onclick="deleteComment('<%=comment[j]._id.toString() %>')">
+                                                                                Xoá
+                                                                            </button>
+                                                                        </div>
+                                                                    </div>
+                                                                    <p class="comment-detail fs-6 my-0"
+                                                                        id="id<%= comment[j]._id.toString() %>">
+                                                                        <%= comment[j].comment %>
+                                                                    </p>
+                                                                    <input type="text"
+                                                                        id="id<%= comment[j]._id.toString() %>">
+                                                                    <div class="button-confirm d-flex">
+                                                                        <button
+                                                                            onclick="unEditComment('<%= comment[j]._id.toString() %>')"
+                                                                            id="id<%= comment[j]._id.toString() %>"
+                                                                            class="m-2 btn-danger">Huỷ</button>
+                                                                        <button
+                                                                            onclick="confirmEditComment('<%= comment[j]._id.toString() %>')"
+                                                                            id="id<%= comment[j]._id.toString() %>"
+                                                                            class="m-2 btn-success">Lưu</button>
+                                                                    </div>
+                                                                </div>
+
+                                                            </div>
+                                                            <% } } %>
                                                     </div>
                                                 </div>
                                             </div>

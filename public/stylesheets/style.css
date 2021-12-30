@@ -1,7 +1,8 @@
 textarea{
-  box-shadow: none;
+
   resize: none;
 }
+
 .card{
   position: fixed;
   left: 50%;
@@ -46,6 +47,12 @@ textarea{
   margin: 20px;
   text-align: left;
 }
+.post .caption .caption-left input{
+  display: none;
+}
+.post .caption .caption-left button{
+  display: none;
+}
 .post .attach{
   text-align: center;
 }
@@ -76,5 +83,14 @@ textarea{
   display: flex;
 }
 .new-post-student .add-attach input[type=file]{
+  display: none;
+}
+
+/* Comment */
+.comment .comment-content input{
+  display: none;
+}
+
+.comment .comment-content .button-confirm button{
   display: none;
 }

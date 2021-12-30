@@ -187,12 +187,12 @@ function addPost() {
                     <p id="id${post._id}" class="caption">
                         ${post.caption}
                     </p>
-                    <input type="text" id="id${post._id}" style="display:none">
+                    <input type="text" id="id${post._id}">
                     <button onclick="unEditPost('${post._id}')" id="id${post._id}"
-                        style="display: none;">Huỷ</button>
+                        >Huỷ</button>
                 </div>
                 <div class="caption-right">
-                    <div class="btn-group my-2 mx-2" role="group"
+                    <div class="my-2 mx-2" role="group"
                     aria-label="Basic mixed styles example">
                         <button type="button" class="btn btn-warning" onclick="editPost('${post._id}')">Sửa</button>
                       <button type="button" class="btn btn-danger" onclick="deletePost('${post._id}')">Xoá</button>
@@ -207,14 +207,18 @@ function addPost() {
 
             var newPost2 = `</div>
             <div class="commentOfPost">
-                <div class="newComment">
-                    <textarea id="newComment" cols="50" rows="1"></textarea>
-                </div>
-                <div class="showComment">
-                    Xinh đẹp tuyệt vời
-                </div>
-            </div>
-        </div>`
+                                                    <div class="newComment mx-5 d-flex">
+                                                        <input class="form-control" type="text" id="id${post._id}"
+                                                            placeholder="Viết bình luận...">
+                                                        <button class="btn btn-primary mx-2 "
+                                                            onclick="addComment('${post._id}')">Gửi</button>
+                                                    </div>
+                                                    <div class="showComment py-2" id="${post._id}">
+                                                        <div class="after-add-comment" id="id${post._id}">
+                                                        </div>
+                                                            
+                                                    </div>
+                                                </div>`
             var finalPost = newPost + imageNew + newPost2
             var curHtml = $('.newPost').html()
             $('.newPost').html(finalPost + curHtml)
@@ -277,47 +281,47 @@ function checkYoutubeUrl(url) {
 
 //edit and delete a post
 function unEditPost(id) {
-    $(`p#id${id}`).css("display", "block")
-    $(`input#id${id}`).css("display", "none")
-    $(`button#id${id}`).css("display", "none")
+    $(`.caption-left p#id${id}`).css("display", "block")
+    $(`.caption-left input#id${id}`).css("display", "none")
+    $(`.caption-left button#id${id}`).css("display", "none")
 }
 function editPost(id) {
     //focus edit
-    $(`input#id${id}`).val($(`p#id${id}`).html().trim())
-    $(`p#id${id}`).css("display", "none")
-    $(`input#id${id}`).css("display", "block")
-    $(`button#id${id}`).css("display", "block")
-    $(`input#id${id}`).focus();
+    $(`.caption-left input#id${id}`).val($(`p#id${id}`).html().trim())
+    $(`.caption-left p#id${id}`).css("display", "none")
+    $(`.caption-left input#id${id}`).css("display", "block")
+    $(`.caption-left button#id${id}`).css("display", "block")
+    $(`.caption-left input#id${id}`).focus();
     //unfocus
 
     //Enter sau khi edit
-    $(`input#id${id}`).on('keyup', function (e) {
+    $(`.caption-left input#id${id}`).on('keyup', function (e) {
         if (e.keyCode === 13) {
-
-            $.ajax({
-                url: '/updateCaption',
-                type: 'put',
-                data: {
-                    _id: id,
-                    caption: $(`input#id${id}`).val()
-                }
-            }).then(data => {
-                if (data.success) {
-                    alert("Chỉnh sửa bài viết thành công")
-                    $(`p#id${id}`).html($(`input#id${id}`).val())
-                    $(`p#id${id}`).css("display", "")
-                    $(`button#id${id}`).css("display", "none")
-                    $(`input#id${id}`).css("display", "none")
-                } else {
-                    alert(data.msg)
-                }
-            }).catch(err => {
-                console.log(err)
-            })
+            confirmEditPost(id)
         }
     });
 }
-
+function confirmEditPost(id) {
+    $.ajax({
+        url: '/updateCaption',
+        type: 'put',
+        data: {
+            _id: id,
+            caption: $(`input#id${id}`).val()
+        }
+    }).then(data => {
+        if (data.success) {
+            $(`p#id${id}`).html($(`input#id${id}`).val())
+            $(`p#id${id}`).css("display", "")
+            $(`button#id${id}`).css("display", "none")
+            $(`input#id${id}`).css("display", "none")
+        } else {
+            alert(data.msg)
+        }
+    }).catch(err => {
+        console.log(err)
+    })
+}
 function deletePost(id) {
     let result = confirm("Bạn chắc chắn muốn xoá bài viết này chứ?");
     if (result === true) {
@@ -329,7 +333,6 @@ function deletePost(id) {
             }
         }).then(data => {
             if (data.success) {
-                alert("Xoá bài viết thành công")
                 $(`.post#id${id}`).remove();
             } else {
                 alert("Xoá bài viết thất bại")
@@ -400,4 +403,134 @@ function addNotification() {
     }
 }
 
+//Add new comment
+function addComment(id) {
+    if ($(`.newComment input#id${id}`).val()) {
+        $.ajax({
+            url: '/addComment',
+            type: 'post',
+            data: {
+                postId: id,
+                comment: $(`.newComment input#id${id}`).val(),
+            }
+        }).then(data => {
+            if (data.success) {
+                $(`.newComment input#id${id}`).val('')
+                let commentData = data.newComment
+                let html = `<div class="comment p-1"
+                id="id${commentData._id.toString()}">
+                <div
+                    class="comment-content border border-2 mt-2 mx-2 p-2 bg-light rounded-3">
+                    <div class="comment-content-header d-flex">
+                        <p class="fw-bolder my-0 fs-6">
+                            ${commentData.fullname}
+                        </p>
+                        <span class="time m-1 mb-0">
+                            ${commentData.createTime}
+                        </span>
+                        <div class="d-flex tool-comment">
+                            <button
+                                class="font-monospace mx-2 link-info bg-white p-0.5 border border-2 rounded-3"
+                                onclick="editComment('${commentData._id.toString()}')">
+                                Sửa
+                            </button>
+                            <button
+                                class="font-monospace link-danger bg-white p-0.5 border border-2 rounded-3"
+                                onclick="deleteComment('${commentData._id.toString()}')">
+                                Xoá
+                            </button>
+                        </div>
+                    </div>
+                    <p class="comment-detail fs-6 my-0"
+                        id="id${commentData._id.toString()}">
+                        ${commentData.comment}
+                    </p>
+                    <input type="text"
+                        id="id${commentData._id.toString()}">
+                    <div class="button-confirm d-flex">
+                        <button
+                            onclick="unEditComment('${commentData._id.toString()}')"
+                            id="id${commentData._id.toString()}"
+                            class="m-2 btn-danger">Huỷ</button>
+                        <button
+                            onclick="confirmEditComment('${commentData._id.toString()}')"
+                            id="id${commentData._id.toString()}"
+                            class="m-2 btn-success">Lưu</button>
+                    </div>
+                </div>
+            </div>`
+                let oldHtml = $(`.after-add-comment#id${id}`).html()
+                $(`.after-add-comment#id${id}`).html(html + oldHtml)
+            } else {
+                alert(data.msg)
+            }
+        }).catch(err => {
+            console.log(err)
+        })
+    } else {
+        alert("Bạn chưa nhập gì")
+    }
+
+}
+
+function unEditComment(id) {
+    $(`.comment-content p#id${id}`).css("display", "block")
+    $(`.comment-content input#id${id}`).css("display", "none")
+    $(`.comment-content button#id${id}`).css("display", "none")
+}
+function editComment(id) {
+    $(`.comment-content input#id${id}`).val($(`.comment-content p#id${id}`).html().trim())
+    $(`.comment-content p#id${id}`).css("display", "none")
+    $(`.comment-content input#id${id}`).css("display", "block")
+    $(`.comment-content button#id${id}`).css("display", "block")
+
+    $(`.comment-content input#id${id}`).on('keyup', function (e) {
+        if (e.keyCode === 13) {
+            confirmEditComment(id)
+        }
+    });
+}
+function confirmEditComment(id) {
+    $.ajax({
+        url: '/updateComment',
+        type: 'put',
+        data: {
+            _id: id,
+            comment: $(`.comment-content input#id${id}`).val()
+        }
+    }).then(data => {
+        if (data.success) {
+            $(`.comment-content p#id${id}`).html($(`.comment-content input#id${id}`).val())
+            $(`.comment-content p#id${id}`).css("display", "")
+            $(`.comment-content button#id${id}`).css("display", "none")
+            $(`.comment-content input#id${id}`).css("display", "none")
+        } else {
+            alert(data.msg)
+        }
+    }).catch(err => {
+        console.log(err)
+    })
+}
+
+//delete comment
+function deleteComment(id) {
+    let result = confirm("Bạn chắc chắn muốn xoá bình luận này chứ?");
+    if (result === true) {
+        $.ajax({
+            url: '/deleteComment',
+            type: 'delete',
+            data: {
+                _id: id,
+            }
+        }).then(data => {
+            if (data.success) {
+                $(`.comment#id${id}`).remove();
+            } else {
+                alert("Xoá bình luận thất bại")
+            }
+        }).catch(err => {
+            console.log(err)
+        })
+    }
+}
 //----------INDEX-POST-END

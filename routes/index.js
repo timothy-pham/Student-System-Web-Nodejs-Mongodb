@@ -100,7 +100,7 @@ router.post('/addPost', checkLogin, (req, res) => {
     let video = checkYoutubeUrl(req.body.video);
     if (req.files) {
         var file = req.files.image;
-        var random = Math.floor(Math.random() * 9999999999999999);
+        var random = Math.floor(Math.random() * 99999999999999);
         var path = '/images/post/' + random + file.name
         file.mv('./public' + path, (err) => {
             let image = ''
@@ -116,7 +116,8 @@ router.post('/addPost', checkLogin, (req, res) => {
         image: path,
         video: video,
         user: req.data._id,
-        fullname: req.data.fullname
+        fullname: req.data.fullname,
+        createAt: Date.now()
     })
     post.save((error, postResult) => {
         if (error) {
@@ -161,7 +162,6 @@ function checkYoutubeUrl(url) {
 
 //sửa bài
 var ObjectId = require('mongodb').ObjectId;
-const category = require('../models/category')
 router.put('/updateCaption', checkLogin, (req, res) => {
     Posts.updateOne({ _id: new ObjectId(req.body._id), user: req.data._id.toString() }, { $set: { caption: req.body.caption } }, (err, obj) => {
         if (err) {
@@ -205,7 +205,8 @@ router.post('/addNotification', checkLogin, (req, res) => {
         detail: detail,
         category: category,
         user: req.data._id,
-        fullname: req.data.fullname
+        fullname: req.data.fullname,
+        createAt: Date.now()
     })
     notification.save((error, notiResult) => {
         if (error) {
@@ -214,6 +215,62 @@ router.post('/addNotification', checkLogin, (req, res) => {
         }
         console.log('add notification success')
         return res.json({ success: true, notiResult: notiResult, msg: 'Đăng thông báo thành công' })
+    });
+})
+
+//Đăng comment
+router.post('/addComment', checkLogin, (req, res) => {
+    let comment = req.body.comment
+    let postId = req.body.postId
+
+    console.log(req.body)
+
+    let newComment = new Comments({
+        comment: comment,
+        postId: postId,
+        user: req.data._id,
+        fullname: req.data.fullname,
+        createAt: Date.now()
+    })
+    newComment.save((error, notiResult) => {
+        if (error) {
+            console.log(error)
+            return res.json({ msg: error, success: false })
+        }
+        console.log('add comment success')
+        return res.json({ success: true, newComment: newComment, msg: 'Đăng bình luận thành công' })
+    });
+})
+
+//Sửa comment
+router.put('/updateComment', checkLogin, (req, res) => {
+    console.log(req.body)
+    Comments.updateOne({ _id: new ObjectId(req.body._id), user: req.data._id.toString() }, { $set: { comment: req.body.comment } }, (err, obj) => {
+        if (err) {
+            console.log(err)
+            return res.json({ success: false, msg: "Chỉnh sửa bình luận thất bại" })
+        }
+        if (obj.modifiedCount === 1) {
+            return res.json({ success: true })
+        } else {
+            return res.json({ success: false, msg: "Bạn không có quyền chỉnh sửa bình luận này" })
+        }
+    })
+})
+
+//Xoá comment
+router.delete('/deleteComment', checkLogin, (req, res) => {
+    Comments.deleteOne({ _id: new ObjectId(req.body._id), user: req.data._id.toString() }, function (err, obj) {
+        if (err) {
+            console.log(err)
+            return res.json({ success: false, msg: "Xoá bình luận thất bại" })
+        }
+        console.log(obj)
+        if (obj.deletedCount === 1) {
+            return res.json({ success: true })
+        } else {
+            return res.json({ success: false, msg: "Bạn không có quyền xoá bình luận này" })
+        }
     });
 })
 module.exports = router;

@@ -327,7 +327,7 @@ li{
 }
 
 
-@media (max-width: 1200px) {
+@media (max-width: 1300px) {
     
     .feed_and_post{
         width: 100%;
@@ -347,7 +347,7 @@ li{
     }
 
     .post-feed{
-        width: 98%;
+        width: 99%;
     }
 }
 
@@ -509,6 +509,24 @@ li{
         padding: 10px;
     }
 
+}
+
+
+/***************************************************** 
+      DETAIL
+******************************************************/
+
+.detail-box .shorttext{
+    font-size: 16px;
+    padding-left: 20px;
+    color: black;
+}
+
+.detail-box .detailtext{
+    font-size: 20px;
+    padding-left: 20px;
+    color: black;
+    padding-bottom: 20px;
 }
 /* ---------------------------------------------------
     MEDIAQUERIES

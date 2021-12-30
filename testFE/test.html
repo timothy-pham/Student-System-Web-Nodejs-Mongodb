@@ -1,0 +1,115 @@
+<% if(user.roles==='student' || user.roles==='admin' ){ %>
+                        <div class="new-post-student">
+                            <h3>Đăng bài</h3>
+                            <div class="mb-3">
+                                <textarea class="form-control" placeholder="Bạn đang nghĩ gì?" name="caption"
+                                    id="caption"></textarea>
+                            </div>
+                            <div id="previewVideo" class=""></div>
+                            <div class="previewImage"><img style="display: none;" id="imagePreview"
+                                    class="img-fluid img-thumbnail rounded mb-3"></div>
+                            <div class="add-attach mb-3">
+                                <label class="btn btn-info dropdown-toggle " for="image">Thêm ảnh</label>
+                                <input class="form-control" type="file" name="image" id="image" accept="image/*"
+                                    onchange="previewImage(this);">
+                                <input class="form-control mx-2" type="text"
+                                    placeholder="Nhập đường dẫn video youtube của bạn" id="video" name="video"
+                                    oninput="previewVideo()"><br>
+                            </div>
+                            <button class="btn btn-primary" type="submit" onclick="addPost()">Đăng bài</button>
+                        </div>
+                        <% } %>
+                            <% if(user.roles==="manager" || user.roles==="admin" ){ %>
+                                <div class="new-post-student">
+                                    <h3>Đăng bài theo chuyên mục</h3>
+                                    <div class="mb-3">
+                                        <input type="text" class="form-control" placeholder="Tiêu đề" id="notiTitle">
+                                    </div>
+                                    <div class="mb-3">
+                                        <input type="text" class="form-control" placeholder="Nội dung tóm tắt"
+                                            id="notiSummary">
+                                    </div>
+                                    <div class="mb-3">
+                                        <textarea class="form-control" placeholder="Nội dung chi tiết"
+                                            id="notiDetail"></textarea>
+                                    </div>
+                                    <select class="form-select mb-3" aria-label="Default select example" id="permission"
+                                        required>
+                                        <option selected value="1">Chọn chuyên mục</option>
+                                        <% if(user.roles==='admin' ){ for(let i=0; i < category.length; i++){ %>
+                                            <option value="<%= category[i].category %>">
+                                                <%= category[i].category %>
+                                            </option>
+                                            <% }} else{ %>
+                                                <% for(let i=0; i < user.permission.length; i++){ %>
+                                                    <option value="<%= category[i].category %>">
+                                                        <%= user.permission[i] %>
+                                                    </option>
+
+                                                    <% } } %>
+                                    </select>
+                                    <button type="button" class="btn btn-primary" onclick="addNotification()">Đăng
+                                        bài</button>
+                                </div>
+
+                                <% } %>
+                                    <div class="timeline">
+                                        <div class="newPost">
+                                        </div>
+                                        <% for(let i=0; i < post.length; i++){ %>
+                                            <div class="post" id="id<%= post[i]._id %>">
+                                                <div class="postOf">
+                                                    <span class="fullname">
+                                                        <%= post[i].fullname %>
+                                                    </span><br>
+                                                    <span class="time">
+                                                        <%= post[i].createTime %>
+                                                    </span>
+
+                                                </div>
+                                                <div class="caption">
+                                                    <div class="caption-left">
+                                                        <p id="id<%=post[i]._id%>" class="caption">
+                                                            <%= post[i].caption %>
+                                                        </p>
+                                                        <input type="text" id="id<%=post[i]._id%>" style="display:none">
+                                                        <button onclick="unEditPost('<%=post[i]._id%>')"
+                                                            id="id<%=post[i]._id%>" style="display: none;">Huỷ</button>
+                                                    </div>
+                                                    <div class="caption-right">
+                                                        <div class="btn-group my-2 mx-2" role="group"
+                                                            aria-label="Basic mixed styles example">
+                                                            <% if(user._id.toString()===post[i].user ||
+                                                                user.roles==='admin' ){ %>
+                                                                <button type="button" class="btn btn-warning"
+                                                                    onclick="editPost('<%=post[i]._id%>')">Sửa</button>
+                                                                <button type="button" class="btn btn-danger"
+                                                                    onclick="deletePost('<%=post[i]._id%>')">Xoá</button>
+
+                                                                <% } %>
+
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+                                                <div class="attach">
+                                                    <div class="video">
+                                                        <%- post[i].video %>
+                                                    </div>
+                                                    <% if(!post[i].image==='' ){ %>
+                                                        <img class="image img-fluid img-thumbnail"
+                                                            src="<%= post[i].image %>">
+                                                        <% } %>
+                                                </div>
+                                                <div class="commentOfPost">
+                                                    <div class="newComment">
+                                                        <textarea id="newComment" cols="50" rows="1"></textarea>
+                                                    </div>
+                                                    <div class="showComment">
+                                                        Xinh đẹp tuyệt vời
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <% } %>
+                                    </div>
+                </div>

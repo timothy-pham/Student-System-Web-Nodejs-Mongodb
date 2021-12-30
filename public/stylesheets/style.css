@@ -1,66 +1,80 @@
-/* Dropdown Button */
-.dropbtn {
-  background-color: #3498DB;
-  color: white;
+textarea{
+  box-shadow: none;
+  resize: none;
+}
+.card{
+  position: fixed;
+  left: 50%;
+  transform: translate(-50%, 0);
+  margin-top: 20px;
+}
+.time{
+  font-size: 0.8rem;
+  color: rgb(99, 99, 99)
+}
+/*index.ejs*/
+.index .header{
+  height: 50px;
+}
+.row .navigation{
+  height: 800px;
+}
+.row .notification{
+  height: 800px;
 }
 
-/* Dropdown button on hover & focus */
-.dropbtn:hover, .dropbtn:focus {
-  background-color: #2980B9;
+
+.new-post-student{
+  margin: 10px
 }
-
-/* The container <div> - needed to position the dropdown content */
-.dropdown {
-  position: relative;
-  display: inline-block;
-}
-
-/* Dropdown Content (Hidden by Default) */
-.dropdown-content {
-  display: none;
-  position: absolute;
-  min-width: 400px;
-box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-z-index: 1;
-}
-
-/* Links inside the dropdown */
-.dropdown-content a {
-  color: black;
-  text-decoration: none;
-  display: block;
-}
-
-/* Change color of dropdown links on hover */
-.dropdown-content a:hover {background-color: #ddd}
-
-.show {display:block;}
-
-.image-upload>input {
-  display: none;
-}
-
-/*index*/
 .post{
-  width: 50%;
+  width: 90%;
   background-color: #d9d9d9;
-  padding: 10px;
+  margin: 20px auto;
+
+}
+.post .postOf{
   margin: 20px;
+  padding-top: 20px;
 }
-
-.post .attach{
-  text-align: center;
-}
-
-.post .attach img{
-  width: 80%;
-  height: 80%;
-  object-fit: contain;
-}
-
 .post .caption{
   background-color: tomato;
   display: flex;
   justify-content:space-between;
 }
+.post .caption .caption-left{
+  margin: 20px;
+  text-align: left;
+}
+.post .attach{
+  text-align: center;
+}
 
+.post .attach img{
+  margin: 20px auto;
+  width: 80%;
+  height: 80%;
+  object-fit: contain;
+}
+.post .attach .video{
+  margin: 10px;
+}
+/* admin.ejs */
+
+.image-upload input {
+  display: none;
+}
+.new-post-student .previewImage{
+  width: 80%;
+  height: 80%;
+  margin: auto;
+}
+.new-post-student .preview img{
+  display: none;
+}
+.new-post-student .add-attach{
+  display: flex;
+}
+.new-post-student .add-attach input[type=file]{
+  display: none;
+}

@@ -93,24 +93,6 @@ function createAccount() {
     })
 }
 
-//dropdown box
-function myFunction() {
-    document.getElementById("myDropdown").classList.toggle("show");
-}
-
-// Close the dropdown menu if the user clicks outside of it
-window.onclick = function (event) {
-    if (!event.target.matches('.dropbtn')) {
-        var dropdowns = document.getElementsByClassName("dropdown-content");
-        var i;
-        for (i = 0; i < dropdowns.length; i++) {
-            var openDropdown = dropdowns[i];
-            if (openDropdown.classList.contains('show')) {
-                openDropdown.classList.remove('show');
-            }
-        }
-    }
-}
 //----------ADMIN END
 
 //----------Manager
@@ -135,7 +117,7 @@ function changePassword() {
 //----------Manager END
 
 //----------STUDENT
-//update ảnh
+
 //update thông tin
 function updateStudent() {
     $.ajax({
@@ -171,7 +153,6 @@ function addPost() {
     formData.append('caption', caption);
     formData.append('video', video);
     formData.append('image', image[0])
-
     $.ajax({
         url: '/addPost',
         type: 'post',
@@ -191,6 +172,10 @@ function addPost() {
             $('#imagePreview').attr("src", "")
             let post = data.postResult
             //add post nhưng ko refesh
+            imageNew = ''
+            if (post.image) {
+                imageNew = `<img class="image" src="${post.image}">`;
+            }
             var newPost = `<div class="post" id="id${post._id}">
             <div class="postOf">
                 <p>
@@ -207,18 +192,20 @@ function addPost() {
                         style="display: none;">Huỷ</button>
                 </div>
                 <div class="caption-right">
-                    
-                        <button onclick="editPost('${post._id}')">Sửa</button>
-                        <button onclick="deletePost('${post._id}')">Xoá</button>
-
+                    <div class="btn-group my-2 mx-2" role="group"
+                    aria-label="Basic mixed styles example">
+                        <button type="button" class="btn btn-warning" onclick="editPost('${post._id}')">Sửa</button>
+                      <button type="button" class="btn btn-danger" onclick="deletePost('${post._id}')">Xoá</button>
                 </div>
+
+                                                    </div>
             </div>
             <div class="attach">
                 <div class="video">
                 ${post.video}
-                </div>
-                <img class="image" src="${post.image}">
-            </div>
+                </div>`;
+
+            var newPost2 = `</div>
             <div class="commentOfPost">
                 <div class="newComment">
                     <textarea id="newComment" cols="50" rows="1"></textarea>
@@ -228,8 +215,9 @@ function addPost() {
                 </div>
             </div>
         </div>`
+            var finalPost = newPost + imageNew + newPost2
             var curHtml = $('.newPost').html()
-            $('.newPost').html(newPost + curHtml)
+            $('.newPost').html(finalPost + curHtml)
         } else {
             alert(data.msg)
         }
@@ -318,6 +306,7 @@ function editPost(id) {
                     alert("Chỉnh sửa bài viết thành công")
                     $(`p#id${id}`).html($(`input#id${id}`).val())
                     $(`p#id${id}`).css("display", "")
+                    $(`button#id${id}`).css("display", "none")
                     $(`input#id${id}`).css("display", "none")
                 } else {
                     alert(data.msg)
@@ -350,4 +339,65 @@ function deletePost(id) {
         })
     }
 }
+
+//add a notification
+var socket = io();
+function addNotification() {
+    var title = $('#notiTitle').val()
+    var summary = $('#notiSummary').val()
+    var detail = $('#notiDetail').val()
+    var permission = $('#permission').val()
+
+    if (permission === '1') {
+        alert("Bạn chưa chọn chuyên mục nào")
+    } else {
+        $.ajax({
+            url: '/addNotification',
+            type: 'post',
+            data: {
+                title: title,
+                summary: summary,
+                detail: detail,
+                permission: permission
+            }
+        }).then(data => {
+            if (data.success) {
+                //thông báo realtime
+                $('#notiTitle').val('')
+                $('#notiSummary').val('')
+                $('#notiDetail').val('')
+                $('#permission option[value="1"]').attr('selected', 'selected');
+                socket.emit('notification', {
+                    title: data.notiResult.title,
+                    category: data.notiResult.category
+                });
+
+                socket.on('notification', function (notification) {
+                    console.log(notification)
+                    var html = `<div class="card">
+                    <div class="card-header">
+                        Thông báo
+                    </div>
+                    <div class="card-body">
+                        <blockquote class="blockquote mb-0">
+                            <p>${notification.category} đã đăng 1 thông báo</p>
+                            <footer class="blockquote-footer">${notification.title}
+                            </footer>
+                        </blockquote>
+                    </div>
+                </div>`
+                    $('.new-notification').html(html)
+                    setTimeout(function () {
+                        $('.new-notification').html('')
+                    }, 3000);
+                });
+            } else {
+                alert(data.msg)
+            }
+        }).catch(err => {
+            console.log(err)
+        })
+    }
+}
+
 //----------INDEX-POST-END

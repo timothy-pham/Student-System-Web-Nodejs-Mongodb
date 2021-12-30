@@ -1,9 +1,9 @@
 const express = require('express')
 const router = express.Router()
-var cookieParser = require('cookie-parser')
 const Users = require('../models/user')
-router.use(cookieParser());
 
+var cookieParser = require('cookie-parser')
+router.use(cookieParser());
 const jwt = require('jsonwebtoken');
 var secret = 'tiendat'
 
@@ -28,63 +28,46 @@ function checkLogin(req, res, next) {
 
 function checkStudent(req, res, next) {
     var role = req.data.roles;
-    if (role === "student") {
+    if (role === "student" || role === "admin") {
         next()
     } else {
         res.redirect('/')
     }
 }
 
-router.get('/', checkLogin, checkStudent, (req, res) => {
+router.get('/', checkLogin, (req, res) => {
     res.render('student', { student: req.data })
 })
 
 //update image
-var multer = require('multer');
-var storage = multer.diskStorage({
-    destination: function (req, file, callback) {
-        callback(null, './public/images');
-    },
-    filename: function (req, file, callback) {
-        callback(null, file.fieldname + '-' + Date.now() + '-' + file.originalname);
-    }
-});
-
-var upload = multer({
-    storage: storage,
-    fileFilter: function (req, file, cb) {
-        if (file.mimetype == "image/bmp" || file.mimetype == "image/png" || file.mimetype == "image/jpeg" || file.mimetype == "image/jpg") {
-            cb(null, true)
-        } else {
-            return cb(new Error('Only image are allowed!'))
-        }
-    }
-}).single('userPhoto');
-
 const fs = require('fs')
 const { promisify } = require('util')
 const unlinkAsync = promisify(fs.unlink)
-router.post('/', checkLogin, checkStudent, function (req, res) {
-    upload(req, res, function (err) {
-        if (err instanceof multer.MulterError) {
-            console.log("A Multer error occurred when uploading.");
-        } else if (err) {
-            console.log("An unknown error occurred when uploading." + err);
-        } else {
-            let url = "images/avatar/" + req.file.filename
-            Users.updateOne({ _id: req.data._id }, { $set: { avatar: url } }, (err, status) => {
-                if (err) {
-                    console.log(err)
-                    return res.render('student', { student: req.data, success: false })
-                }
-                // Delete the old file
-                let path = "./public/" + req.data.avatar
-                unlinkAsync(path)
-                console.log("Change avatar success");
-                return res.render('student', { student: { avatar: url }, success: true })
-            })
-        }
-    });
+// Delete the old file
+
+router.post('/updateAvatar', checkLogin, function (req, res) {
+    if (req.files) {
+        var file = req.files.userPhoto;
+        var random = Math.floor(Math.random() * 9999999999999999);
+        var path = '/images/avatar/' + random + file.name
+        file.mv('./public' + path, (err) => {
+            if (err) {
+                console.log(err)
+            } else {
+                console.log('post with image')
+                Users.updateOne({ _id: req.data._id }, { $set: { avatar: path } }, (err, status) => {
+                    if (err) {
+                        console.log(err)
+                        return res.render('student', { student: req.data, success: false })
+                    }
+                    let oldImg = "./public/" + req.data.avatar
+                    unlinkAsync(oldImg)
+                    console.log("Change avatar success");
+                    return res.render('student', { student: { avatar: path }, success: true })
+                })
+            }
+        })
+    }
 });
 
 

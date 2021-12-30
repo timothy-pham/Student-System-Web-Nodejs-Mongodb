@@ -12,7 +12,7 @@ router.get('/', (req, res) => {
 router.post('/', (req, res) => {
     let username = req.body.username;
     let password = req.body.password;
-
+    console.log('login')
     Users.findOne({ username: username }, (err, user) => {
         if (err) {
             return console.log(err)

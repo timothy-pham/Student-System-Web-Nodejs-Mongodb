@@ -191,4 +191,29 @@ router.delete('/deletePost', checkLogin, (req, res) => {
         }
     });
 })
+
+//Đăng thông báo
+router.post('/addNotification', checkLogin, (req, res) => {
+    let title = req.body.title
+    let summary = req.body.summary
+    let detail = req.body.detail
+    let category = req.body.permission
+
+    let notification = new Notifications({
+        title: title,
+        summary: summary,
+        detail: detail,
+        category: category,
+        user: req.data._id,
+        fullname: req.data.fullname
+    })
+    notification.save((error, notiResult) => {
+        if (error) {
+            console.log(error)
+            return res.json({ msg: error, success: false })
+        }
+        console.log('add notification success')
+        return res.json({ success: true, notiResult: notiResult, msg: 'Đăng thông báo thành công' })
+    });
+})
 module.exports = router;

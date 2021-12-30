@@ -5,31 +5,152 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
+    <!-- Bootstrap CSS CDN -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css"
+        integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
+    <!-- Our Custom CSS -->
+    <link rel="stylesheet" href="./style.css">
+
+    <!-- Font Awesome JS -->
+    <script defer src="https://use.fontawesome.com/releases/v5.0.13/js/solid.js"
+        integrity="sha384-tzzSw1/Vo+0N5UhStP3bvwWPq+uvzCMfrN1fEFe+xBmv1C/AtVX5K0uZtmcHitFZ"
+        crossorigin="anonymous"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.0.13/js/fontawesome.js"
+        integrity="sha384-6OIrr52G08NpOFSZdxxz1xdNSndlD4vdcf/q2myIUVO0VsqaGHJsB0RaBE01VTOY"
+        crossorigin="anonymous"></script>
+    <script src="/javascripts/main.js"></script>
+    <link rel="stylesheet" href="/stylesheets/style.css">
     <script src="/javascripts/main.js"></script>
     <link rel="stylesheet" href="/stylesheets/style.css">
     <title>Admin Page</title>
 </head>
 
 <body>
-    <div class="tao tai khoan teaches">
-        <h3>Tạo tài khoản phòng/khoa</h3>
-        Username:<input type="text" id="username"><br>
-        Password:<input type="password" id="password"><br>
-        Tên Phòng Ban: <input type="text" id="fullname"><br>
-
-        <div class="dropdown">
-            <button onclick="myFunction()" class="dropbtn">Dropdown</button>
-            <div id="myDropdown" class="dropdown-content">
-                <% for(let i=0; i < category.length; i++){ %>
-                    <input class="categoryCheckbox" type="checkbox" value="<%=category[i] %>" name="permission">
-                    <%= category[i] %>
-                        <br>
-                        <% } %>
+    <div class="wrapper">
+        <!-- Sidebar  -->
+        <nav id="sidebar">
+            <div class="sidebar-header">
+                <h3>FINAL WEB</h3>
             </div>
-        </div>
-        <button onclick="createAccount()">Create Account</button>
-    </div>
+
+            <ul class="list-unstyled components">
+                <li>
+                    <a href="#homeSubmenu" data-toggle="collapse" aria-expanded="false">
+                        <i class="fas fa-home"></i>
+                        Trang chủ
+                    </a>
+                </li>
+                <li class="active">
+                    <a href="#">
+                        <i class="fas fa-users"></i>
+                        Cá nhân
+                    </a>
+                </li>
+                <li>
+                    <a href="#">
+                        <i class="fas fa-tasks"></i>
+                        Thông báo
+                    </a>
+                </li>
+                <li>
+                    <a href="#">
+                        <i class="fas fa-archive"></i>
+                        Phòng/ban
+                    </a>
+                </li>
+                <li>
+                    <a href="#">
+                        <i class="fas fa-sign-out-alt"></i>
+                        Đăng xuất
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Page Content  -->
+        <div id="content">
+
+            <nav class="navbar navbar-expand-lg navbar-light bg-info">
+                <div class="container-fluid">
+
+                    <!-- <button type="button" id="sidebarCollapse" class="btn btn-info">
+                <i class="fas fa-align-left"></i>
+                <span></span>
+              </button> -->
+                    <button class="btn btn-dark d-inline-block d-lg-none ml-auto" type="button" data-toggle="collapse"
+                        data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                        <i class="fas fa-align-justify"></i>
+                    </button>
+
+                    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                        <ul class="nav navbar-nav ml-auto justify-content-around">
+                            <li class="nav-item">
+                                <a class="nav-link" href="#"><img src="admin.jpg" height="20"> Người dùng</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link">Thông báo</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link">Phòng ban</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link">Đăng xuát</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link active">Trang chủ</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+            <div class="title-update-std p-2 bg-dpm mb-2">
+                <h7>Trang quản lí</h7>
+            </div>
+            <div class="create-account">
+                <h3>Tạo tài khoản phòng/khoa</h3>
+                <table>
+                    <tr>
+                        <td>Tài khoản:</td>
+                        <td>
+                            <input type="text" id="username"><br>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Mật khẩu:</td>
+                        <td>
+                            <input type="password" id="password"><br>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Tên Phòng Ban:</td>
+                        <td>
+                            <input type="text" id="fullname"><br>
+                        </td>
+                    </tr>
+                    <tr>
+                        <div class="dropdown">
+                            <td>
+                                <button onclick="myFunction()" class="dropbtn">Dropdown</button>
+                            <div id="myDropdown" class="dropdown-content">
+                                <% for(let i=0; i < category.length; i++){ %>
+                                    <input class="categoryCheckbox" type="checkbox" value="<%=category[i] %>"
+                                        name="permission">
+                                    <%= category[i] %>
+                                        <br>
+                                        <% } %>
+                            </div>
+                            </td>
+                            <td>
+                                <button class="btn btn-success" onclick="createAccount()">Create Account</button>
+                            </td>
+                        </div>
+                    </tr>
+                </table>
+                <div class = "Hien thong bao cua admin">
+
+                </div>
+            </div>
 </body>
 
 </html>

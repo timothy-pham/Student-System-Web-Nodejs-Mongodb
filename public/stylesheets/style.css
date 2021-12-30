@@ -51,11 +51,12 @@ a:focus {
 }
 
 .navbar {
+    margin-top: -15px;
     padding: 15px 10px;
     background: #0067ac;
     border: none;
     border-radius: 0;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
     box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
 }
 
@@ -594,6 +595,58 @@ li{
 
 }
 
+/***************************************************** 
+   STUDENT PAGE
+******************************************************/
+.title-update-std{
+    background: #0a819c;
+}
+.title-update-std h7{
+    font-size: large;
+    color: #fff;
+    text-transform: uppercase;
+}
+.update-student{
+    background: #fff;
+}
+.update-student .image-upload{
+    text-align: center;
+    padding-bottom: 15px;
+}
+.form-update table{
+    margin: auto;
+}
+
+.form-update table tr td{
+    padding: 5px;
+}
+
+.update-student .std-update{
+        margin-top: 20px;
+        padding-bottom: 15px;
+        text-align: center;
+        border-bottom: 1px solid #ccc;
+}
+
+/******************************************************
+    ADMIN PAGE
+*******************************************************/
+
+.create-account{
+    text-align: center;
+    background: #fff;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.create-account table{
+    margin: auto;
+}
+
+.create-account table tr td{
+    padding: 10px;
+}
 
 /* ---------------------------------------------------
     MEDIAQUERIES

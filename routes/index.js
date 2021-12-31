@@ -31,36 +31,50 @@ function checkLogin(req, res, next) {
     }
 }
 
-router.get('/', checkLogin, (req, res) => {
-    Posts.find().sort({ createAt: -1 }).then(data => {
-        var post = [];
+router.get('/posts/:p?', checkLogin, (req, res) => {
+    let p = req.params.p
+    if (p >= 1) {
+        p = p * 10
+    }
+    Posts.find().sort({ createAt: -1 }).skip(p).limit(10).then(data => {
+        var posts = [];
         for (let i = 0; i < data.length; i++) {
-            post.push(data[i])
+            posts.push(data[i])
         }
-        Notifications.find().sort({ createAt: -1 }).then(data => {
-            var notification = [];
+        res.json({ posts: posts, status: 'success' })
+    }).catch(err => {
+        console.log(err)
+        res.json({ status: err })
+    })
+})
+
+router.post('/comments', checkLogin, (req, res) => {
+
+    Comments.find({ postId: req.body.postId }).sort({ createAt: -1 }).then(data => {
+        var comments = [];
+        for (let i = 0; i < data.length; i++) {
+            comments.push(data[i])
+        }
+        res.json({ comments: comments, status: 'success' })
+    }).catch(err => {
+        console.log(err)
+        res.json({ status: err })
+    })
+})
+
+
+router.get('/', checkLogin, (req, res) => {
+    Notifications.find().sort({ createAt: -1 }).then(data => {
+        var notification = [];
+        for (let i = 0; i < data.length; i++) {
+            notification.push(data[i])
+        }
+        Categories.find().then(data => {
+            var category = [];
             for (let i = 0; i < data.length; i++) {
-                notification.push(data[i])
+                category.push(data[i])
             }
-            Comments.find().sort({ createAt: -1 }).then(data => {
-                var comment = [];
-                for (let i = 0; i < data.length; i++) {
-                    comment.push(data[i])
-                }
-                Categories.find().then(data => {
-                    var category = [];
-                    for (let i = 0; i < data.length; i++) {
-                        category.push(data[i])
-                    }
-                    res.render('index', { user: req.data, post: post, notification: notification, comment: comment, category: category })
-                }).catch(err => {
-                    console.log(err)
-                    res.render('index')
-                })
-            }).catch(err => {
-                console.log(err)
-                res.render('index')
-            })
+            res.render('index', { user: req.data, notification: notification, category: category })
         }).catch(err => {
             console.log(err)
             res.render('index')

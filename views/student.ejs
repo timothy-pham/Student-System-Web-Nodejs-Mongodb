@@ -29,9 +29,9 @@
                 <input id="file-input" type="file" name="userPhoto" onchange="form.submit()" accept="image/*" />
             </div>
         </form>
-        Họ và tên:<input type="text" id="fullname" value="<%=student.fullname %>"><br>
-        Lớp:<input type="text" id="class" value="<%=student.class %>"><br>
-        Khoa:<input type="text" id="falcuty" value="<%=student.falcuty %>"><br>
+        Họ và tên:<input type="text" id="fullname" placeholder="<%= student.fullname %>"><br>
+        Lớp:<input type="text" id="class" placeholder="<%= student.class %>"><br>
+        Khoa:<input type="text" id="falcuty" placeholder="<%= student.falcuty %>"><br>
         <button type="submit" onclick="updateStudent()">Cập nhật</button>
     </div>
 </body>

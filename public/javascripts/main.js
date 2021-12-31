@@ -1,3 +1,157 @@
+//----------LOAD POST
+
+//document ready
+$(window).on('scroll', () => {
+    const scroll = window.scrollY;
+    const scrollMax = document.documentElement.scrollHeight - window.innerHeight
+    if (scroll >= scrollMax) {
+        setTimeout(function () {
+            loadMore()
+        }, 500);
+    }
+})
+
+var postPage = 0
+$(function () {
+    getPosts(postPage);
+})
+
+function loadMore() {
+    postPage++
+    getPosts(postPage)
+}
+
+function getPosts(page) {
+    $.ajax({
+        url: '/posts/' + page,
+        type: 'get',
+
+    }).then(data => {
+        renderPosts(data.posts)
+        getComments(data.posts)
+    }).catch(err => {
+        console.log(err)
+    })
+}
+
+function renderPosts(posts) {
+    $.each(posts, function (i, post) {
+        var html1 = `
+            <div class="post" id="id${post._id}">
+                <div class="postOf">
+                    <span class="fullname">
+                        ${post.fullname}
+                    </span><br>
+                    <span class="time">
+                        ${post.createTime}
+                    </span>
+
+                </div>
+                <div class="caption">
+                    <div class="caption-left">
+                        <p id="id${post._id}" class="caption">
+                            ${post.caption}
+                        </p>
+                        <input type="text" id="id${post._id}">
+                        <div class="button-confirm d-flex">
+                            <button onclick="unEditPost('${post._id}')"
+                                id="id${post._id}"
+                                class="m-2 btn-danger">Huỷ</button>
+                            <button onclick="confirmEditPost('${post._id}"
+                                id="id${post._id}"
+                                class="m-2 btn-success">Lưu</button>
+                        </div>
+
+                    </div>
+                    <div class="caption-right">
+                            <button type="button" class="btn btn-warning"
+                                onclick="editPost('${post._id}')">Sửa</button>
+                            <button type="button" class="btn btn-danger"
+                                onclick="deletePost('${post._id}')">Xoá</button>
+                    </div>
+                </div>
+                <div class="attach">
+                    <div class="video">
+                    ${post.video}
+                    </div>`
+        var html2 = ''
+        if (post.image) {
+            html2 = `<img class="image img-fluid img-thumbnail"
+                            src="${post.image}"></img>`
+        }
+        var html3 = `</div>
+                <div class="commentOfPost">
+                    <div class="newComment mx-5 d-flex">
+                        <input class="form-control" type="text" id="id${post._id}"
+                            placeholder="Viết bình luận...">
+                        <button class="btn btn-primary mx-2 "
+                            onclick="addComment('${post._id}')">Gửi</button>
+                    </div>
+                    <div class="showComment py-2" id="id${post._id}">
+                            
+                    </div>
+                </div>
+            </div>`
+        var html = html1 + html2 + html3
+        $('.timeline').append(html)
+    })
+}
+
+function getComments(posts) {
+    $.each(posts, function (i, post) {
+        $.ajax({
+            url: '/comments',
+            type: 'post',
+            data: {
+                postId: post._id
+            },
+            success: function (data) {
+                renderComments(data.comments)
+            }
+        })
+    })
+}
+
+function renderComments(comments) {
+    $.each(comments, function (i, comment) {
+        var html = `<div class="comment p-1" id="id${comment._id}">
+        <div class="comment-content border border-2 mt-2 mx-2 p-2 bg-light rounded-3">
+          <div class="comment-content-header d-flex">
+            <p class="fw-bolder my-0 fs-6">
+            ${comment.fullname}
+            </p>
+            <span class="time m-1 mb-0">
+            ${comment.createTime}
+            </span>
+            <div class="d-flex tool-comment">
+              <button class="font-monospace mx-2 link-info bg-white p-0.5 border border-2 rounded-3"
+                onclick="editComment('${comment._id}')">
+                Sửa
+              </button>
+              <button class="font-monospace link-danger bg-white p-0.5 border border-2 rounded-3"
+                onclick="deleteComment('${comment._id}')">
+                Xoá
+              </button>
+            </div>
+          </div>
+          <p class="comment-detail fs-6 my-0" id="id${comment._id}">
+          ${comment.comment}
+          </p>
+          <input type="text" id="id${comment._id}">
+          <div class="button-confirm d-flex">
+            <button onclick="unEditComment('${comment._id}')"
+              id="id${comment._id}" class="m-2 btn-danger">Huỷ</button>
+            <button onclick="confirmEditComment('${comment._id}')"
+              id="id${comment._id}" class="m-2 btn-success">Lưu</button>
+          </div>
+        </div>
+      </div>`
+        $(`.showComment#id${comment.postId}`).append(html)
+    })
+}
+//----------END LOAD POST
+
+
 //----------LOGIN
 function login() {
     $.ajax({
@@ -218,10 +372,10 @@ function addPost() {
                                                         </div>
                                                             
                                                     </div>
-                                                </div>`
+                                                </div></div>`
             var finalPost = newPost + imageNew + newPost2
-            var curHtml = $('.newPost').html()
-            $('.newPost').html(finalPost + curHtml)
+            var curHtml = $('.timeline').html()
+            $('.timeline').html(finalPost + curHtml)
         } else {
             alert(data.msg)
         }
@@ -459,8 +613,8 @@ function addComment(id) {
                     </div>
                 </div>
             </div>`
-                let oldHtml = $(`.after-add-comment#id${id}`).html()
-                $(`.after-add-comment#id${id}`).html(html + oldHtml)
+                let oldHtml = $(`.showComment#id${id}`).html()
+                $(`.showComment#id${id}`).html(html + oldHtml)
             } else {
                 alert(data.msg)
             }

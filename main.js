@@ -37,6 +37,7 @@ app.use('/login', require('./routes/login'))
 app.use('/admin', require('./routes/admin'))
 app.use('/manager', require('./routes/manager'))
 app.use('/student', require('./routes/student'))
+app.use('/notification', require('./routes/notification'))
 
 const http = require('http');
 const server = http.createServer(app);
@@ -44,13 +45,6 @@ const { Server } = require("socket.io");
 const io = new Server(server);
 
 io.on('connection', (socket) => {
-    socket.on('connect', () => {
-        console.log('user connected');
-    });
-    socket.on('disconnect', () => {
-        console.log('user disconnected');
-    });
-
     socket.on('notification', (msg) => {
         io.emit('notification', msg);
     });

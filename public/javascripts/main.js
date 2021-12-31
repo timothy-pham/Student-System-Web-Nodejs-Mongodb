@@ -7,15 +7,145 @@ $(window).on('scroll', () => {
     if (scroll >= scrollMax) {
         setTimeout(function () {
             loadMore()
-        }, 500);
+        }, 1000);
     }
 })
 
 var postPage = 0
+var notificationPage = 0
+var categoryCurrent = false
 $(function () {
     getPosts(postPage);
+    getNotifications(notificationPage)
 })
 
+function getNotiByCategory() {
+    var category = $('#category').val()
+    if (category !== '1') {
+        categoryCurrent = category
+        notificationPage = 0
+        getNotifications(notificationPage, category)
+    }
+    else {
+        getNotifications(notificationPage)
+    }
+}
+
+function setPageButton() {
+    $('.btn-page#id1').html(notificationPage + 1)
+    $('.btn-page#id2').html(notificationPage + 2)
+    $('.btn-page#id3').html(notificationPage + 3)
+    $('.btn-page#id4').html(notificationPage + 4)
+}
+function backPageCategory() {
+    if (categoryCurrent) {
+        if (notificationPage > 0) {
+            notificationPage = notificationPage - 1
+            getNotifications(notificationPage, categoryCurrent)
+            setPageButton()
+        }
+    } else {
+        if (notificationPage > 0) {
+            notificationPage = notificationPage - 1
+            getNotifications(notificationPage)
+            setPageButton()
+        }
+    }
+}
+function nextPageCategory() {
+    if (categoryCurrent) {
+        notificationPage = notificationPage + 1
+        getNotifications(notificationPage, categoryCurrent)
+        console.log(categoryCurrent)
+        setPageButton()
+    } else {
+        notificationPage = notificationPage + 1
+        getNotifications(notificationPage)
+        setPageButton()
+    }
+}
+function getNotiByPage(self) {
+    if (categoryCurrent) {
+        if ($('#pageNumber').val()) {
+            var page = $('#pageNumber').val()
+            notificationPage = page - 1
+            getNotifications(notificationPage, categoryCurrent)
+            $('#pageNumber').val('')
+            setPageButton()
+            return
+        }
+        var page = $(self).html()
+        notificationPage = page - 1
+        getNotifications(notificationPage, categoryCurrent)
+    } else {
+        if ($('#pageNumber').val()) {
+            var page = $('#pageNumber').val()
+            notificationPage = page - 1
+            getNotifications(notificationPage, categoryCurrent)
+            $('#pageNumber').val('')
+            setPageButton()
+            return
+        }
+        var page = $(self).html()
+        notificationPage = page - 1
+        getNotifications(notificationPage, categoryCurrent)
+    }
+}
+function getNotifications(page, category) {
+    if (!category) {
+        $.ajax({
+            url: '/notifications/' + page,
+            type: 'get',
+        }).then(data => {
+            renderNotifications(data.notifications)
+        })
+    } else {
+        $.ajax({
+            url: '/notification/' + category + '/' + page,
+            type: 'get',
+        }).then(data => {
+            renderNotificationsWithCategory(data.notifications)
+            setPageButton()
+        })
+    }
+
+}
+function renderNotificationsWithCategory(notifications) {
+    if (notifications.length === 0) {
+        var html = ''
+        $('.notice-box-body').html(html)
+    } else {
+        $('.notice-box-body').html('')
+        $.each(notifications, function (index, notification) {
+            var html = renderOneNotification(notification)
+            $('.notice-box-body').append(html)
+        })
+    }
+}
+function renderNotifications(notifications) {
+    $('.notice-box-body').html('')
+    $.each(notifications, function (index, notification) {
+        var html = renderOneNotification(notification)
+        $('.notice-box-body').append(html)
+    })
+}
+function renderOneNotification(notification) {
+    var html = `
+    <div class="one-notice">
+        <div class="notice-date-time">
+        [${notification.category}]&nbsp; -${notification.createTime.split(',')[0]}
+        </div>
+        <div class="notice-title">
+            <a href="notification/${notification._id}">${notification.title}</a>
+        </div>
+        <div class="notice-summary">
+        ${notification.summary}
+        </div>
+    </div>`
+    return html
+}
+
+//load more post
 function loadMore() {
     postPage++
     getPosts(postPage)
@@ -29,23 +159,50 @@ function getPosts(page) {
     }).then(data => {
         renderPosts(data.posts)
         getComments(data.posts)
-    }).catch(err => {
-        console.log(err)
     })
 }
 
 function renderPosts(posts) {
     $.each(posts, function (i, post) {
-        var html1 = `
-            <div class="post" id="id${post._id}">
-                <div class="postOf">
-                    <span class="fullname">
-                        ${post.fullname}
-                    </span><br>
-                    <span class="time">
-                        ${post.createTime}
-                    </span>
-
+        $.ajax({
+            url: '/getUser',
+            type: 'post',
+            data: {
+                userId: post.user
+            },
+            success: function (data) {
+                if (data.success) {
+                    var html = renderOnePost(post, data.user)
+                    $('.timeline').append(html)
+                }
+            }
+        })
+    })
+}
+function renderOnePost(post, user) {
+    var html1 = `
+            <div class="post rounded rounded-3" id="id${post._id}">
+                <div class="d-flex postOf">
+                    <div class="caption-left d-flex">
+                        <div class="user-avatar">
+                        <img src="${user.avatar}">
+                        </div>         
+                        <div class="name-time">
+                        <span class="fullname">
+                            ${post.fullname}
+                        </span><br>
+                        <span class="time">
+                            ${post.createTime}
+                        </span>
+                        </div>
+                    </div>
+                    <div class="caption-right">
+                    <div class="my-2 mx-2" role="group"
+                    aria-label="Basic mixed styles example">
+                        <button type="button" class="btn btn-warning" onclick="editPost('${post._id}')">Sửa</button>
+                      <button type="button" class="btn btn-danger" onclick="deletePost('${post._id}')">Xoá</button>
+                    </div>
+                    </div>
                 </div>
                 <div class="caption">
                     <div class="caption-left">
@@ -61,25 +218,18 @@ function renderPosts(posts) {
                                 id="id${post._id}"
                                 class="m-2 btn-success">Lưu</button>
                         </div>
-
-                    </div>
-                    <div class="caption-right">
-                            <button type="button" class="btn btn-warning"
-                                onclick="editPost('${post._id}')">Sửa</button>
-                            <button type="button" class="btn btn-danger"
-                                onclick="deletePost('${post._id}')">Xoá</button>
                     </div>
                 </div>
                 <div class="attach">
                     <div class="video">
                     ${post.video}
                     </div>`
-        var html2 = ''
-        if (post.image) {
-            html2 = `<img class="image img-fluid img-thumbnail"
+    var html2 = ''
+    if (post.image) {
+        html2 = `<img class="image img-fluid img-thumbnail"
                             src="${post.image}"></img>`
-        }
-        var html3 = `</div>
+    }
+    var html3 = `</div>
                 <div class="commentOfPost">
                     <div class="newComment mx-5 d-flex">
                         <input class="form-control" type="text" id="id${post._id}"
@@ -88,47 +238,34 @@ function renderPosts(posts) {
                             onclick="addComment('${post._id}')">Gửi</button>
                     </div>
                     <div class="showComment py-2" id="id${post._id}">
-                            
                     </div>
                 </div>
             </div>`
-        var html = html1 + html2 + html3
-        $('.timeline').append(html)
-    })
+    var html = html1 + html2 + html3
+    return html;
 }
 
-function getComments(posts) {
-    $.each(posts, function (i, post) {
-        $.ajax({
-            url: '/comments',
-            type: 'post',
-            data: {
-                postId: post._id
-            },
-            success: function (data) {
-                renderComments(data.comments)
-            }
-        })
-    })
-}
-
-function renderComments(comments) {
-    $.each(comments, function (i, comment) {
-        var html = `<div class="comment p-1" id="id${comment._id}">
-        <div class="comment-content border border-2 mt-2 mx-2 p-2 bg-light rounded-3">
+function renderOneComment(comment, user) {
+    var html = `<div class="comment p-1" id="id${comment._id}">
+        <div class="comment-content rounded rounded-3 mt-2 mx-2 p-2 bg-light ">
           <div class="comment-content-header d-flex">
-            <p class="fw-bolder my-0 fs-6">
-            ${comment.fullname}
-            </p>
-            <span class="time m-1 mb-0">
-            ${comment.createTime}
-            </span>
+          <div class="user-avatar">
+                    <img src="${user.avatar}">
+                    </div>
+                    <div class="name-time">
+                    <span class="fullname">
+                        ${comment.fullname}
+                    </span><br>
+                    <span class="time">
+                        ${comment.createTime}
+                    </span>
+                    </div>
             <div class="d-flex tool-comment">
-              <button class="font-monospace mx-2 link-info bg-white p-0.5 border border-2 rounded-3"
+              <button class="btn link-info bg-white px-2 py-0 border border-2 rounded-3 mx-2"
                 onclick="editComment('${comment._id}')">
                 Sửa
               </button>
-              <button class="font-monospace link-danger bg-white p-0.5 border border-2 rounded-3"
+              <button class="btn link-danger bg-white px-2 py-0 border border-2 rounded-3"
                 onclick="deleteComment('${comment._id}')">
                 Xoá
               </button>
@@ -146,9 +283,39 @@ function renderComments(comments) {
           </div>
         </div>
       </div>`
-        $(`.showComment#id${comment.postId}`).append(html)
+    return html
+}
+function getComments(posts) {
+    $.each(posts, function (i, post) {
+        $.ajax({
+            url: '/comments',
+            type: 'post',
+            data: {
+                postId: post._id
+            },
+            success: function (data) {
+                renderComments(data.comments)
+            }
+        })
     })
 }
+
+function renderComments(comments) {
+    $.each(comments, function (i, comment) {
+        $.ajax({
+            url: '/getUser',
+            type: 'post',
+            data: {
+                userId: comment.user
+            },
+            success: function (data) {
+                var html = renderOneComment(comment, data.user)
+                $(`.showComment#id${comment.postId}`).append(html)
+            }
+        })
+    })
+}
+
 //----------END LOAD POST
 
 
@@ -325,57 +492,20 @@ function addPost() {
             $('#imagePreview').css("display", "none")
             $('#imagePreview').attr("src", "")
             let post = data.postResult
-            //add post nhưng ko refesh
-            imageNew = ''
-            if (post.image) {
-                imageNew = `<img class="image" src="${post.image}">`;
-            }
-            var newPost = `<div class="post" id="id${post._id}">
-            <div class="postOf">
-                <p>
-                    ${post.fullname} 
-                </p>
-            </div>
-            <div class="caption">
-                <div class="caption-left">
-                    <p id="id${post._id}" class="caption">
-                        ${post.caption}
-                    </p>
-                    <input type="text" id="id${post._id}">
-                    <button onclick="unEditPost('${post._id}')" id="id${post._id}"
-                        >Huỷ</button>
-                </div>
-                <div class="caption-right">
-                    <div class="my-2 mx-2" role="group"
-                    aria-label="Basic mixed styles example">
-                        <button type="button" class="btn btn-warning" onclick="editPost('${post._id}')">Sửa</button>
-                      <button type="button" class="btn btn-danger" onclick="deletePost('${post._id}')">Xoá</button>
-                </div>
-
-                                                    </div>
-            </div>
-            <div class="attach">
-                <div class="video">
-                ${post.video}
-                </div>`;
-
-            var newPost2 = `</div>
-            <div class="commentOfPost">
-                                                    <div class="newComment mx-5 d-flex">
-                                                        <input class="form-control" type="text" id="id${post._id}"
-                                                            placeholder="Viết bình luận...">
-                                                        <button class="btn btn-primary mx-2 "
-                                                            onclick="addComment('${post._id}')">Gửi</button>
-                                                    </div>
-                                                    <div class="showComment py-2" id="${post._id}">
-                                                        <div class="after-add-comment" id="id${post._id}">
-                                                        </div>
-                                                            
-                                                    </div>
-                                                </div></div>`
-            var finalPost = newPost + imageNew + newPost2
-            var curHtml = $('.timeline').html()
-            $('.timeline').html(finalPost + curHtml)
+            $.ajax({
+                url: '/getUser',
+                type: 'post',
+                data: {
+                    userId: post.user
+                },
+                success: function (data) {
+                    if (data.success) {
+                        var html = renderOnePost(post, data.user)
+                        var curHtml = $('.timeline').html()
+                        $('.timeline').html(html + curHtml)
+                    }
+                }
+            })
         } else {
             alert(data.msg)
         }
@@ -389,7 +519,8 @@ function previewImage(self) {
         var fileReader = new FileReader();
 
         fileReader.onload = function (event) {
-            document.getElementById("imagePreview").style.display = "";
+            $('.previewImage').css("display", "block")
+            $('.previewImage img').css("display", "block")
             document.getElementById("imagePreview").setAttribute("src", event.target.result);
         }
         fileReader.readAsDataURL(file[0]);
@@ -489,7 +620,7 @@ function deletePost(id) {
             if (data.success) {
                 $(`.post#id${id}`).remove();
             } else {
-                alert("Xoá bài viết thất bại")
+                alert(data.msg)
             }
         }).catch(err => {
             console.log(err)
@@ -528,10 +659,8 @@ function addNotification() {
                     title: data.notiResult.title,
                     category: data.notiResult.category
                 });
-
                 socket.on('notification', function (notification) {
-                    console.log(notification)
-                    var html = `<div class="card">
+                    var html = `<a href="/notification/${data.notiResult._id}"><div class="card">
                     <div class="card-header">
                         Thông báo
                     </div>
@@ -542,11 +671,14 @@ function addNotification() {
                             </footer>
                         </blockquote>
                     </div>
-                </div>`
+                </div>
+                </a>`
+                    $('.new-notification-2').css("display", "block")
                     $('.new-notification').html(html)
                     setTimeout(function () {
                         $('.new-notification').html('')
-                    }, 3000);
+                        $('.new-notification-2').css("display", "none")
+                    }, 5000);
                 });
             } else {
                 alert(data.msg)
@@ -569,52 +701,24 @@ function addComment(id) {
             }
         }).then(data => {
             if (data.success) {
-                $(`.newComment input#id${id}`).val('')
-                let commentData = data.newComment
-                let html = `<div class="comment p-1"
-                id="id${commentData._id.toString()}">
-                <div
-                    class="comment-content border border-2 mt-2 mx-2 p-2 bg-light rounded-3">
-                    <div class="comment-content-header d-flex">
-                        <p class="fw-bolder my-0 fs-6">
-                            ${commentData.fullname}
-                        </p>
-                        <span class="time m-1 mb-0">
-                            ${commentData.createTime}
-                        </span>
-                        <div class="d-flex tool-comment">
-                            <button
-                                class="font-monospace mx-2 link-info bg-white p-0.5 border border-2 rounded-3"
-                                onclick="editComment('${commentData._id.toString()}')">
-                                Sửa
-                            </button>
-                            <button
-                                class="font-monospace link-danger bg-white p-0.5 border border-2 rounded-3"
-                                onclick="deleteComment('${commentData._id.toString()}')">
-                                Xoá
-                            </button>
-                        </div>
-                    </div>
-                    <p class="comment-detail fs-6 my-0"
-                        id="id${commentData._id.toString()}">
-                        ${commentData.comment}
-                    </p>
-                    <input type="text"
-                        id="id${commentData._id.toString()}">
-                    <div class="button-confirm d-flex">
-                        <button
-                            onclick="unEditComment('${commentData._id.toString()}')"
-                            id="id${commentData._id.toString()}"
-                            class="m-2 btn-danger">Huỷ</button>
-                        <button
-                            onclick="confirmEditComment('${commentData._id.toString()}')"
-                            id="id${commentData._id.toString()}"
-                            class="m-2 btn-success">Lưu</button>
-                    </div>
-                </div>
-            </div>`
-                let oldHtml = $(`.showComment#id${id}`).html()
-                $(`.showComment#id${id}`).html(html + oldHtml)
+                var commentData = data.newComment
+                $.ajax({
+                    url: '/getUser',
+                    type: 'post',
+                    data: {
+                        userId: commentData.user
+                    },
+                    success: function (data) {
+                        if (data.success) {
+                            $(`.newComment input#id${id}`).val('')
+
+                            var html = renderOneComment(commentData, data.user)
+                            var oldHtml = $(`.showComment#id${id}`).html()
+                            $(`.showComment#id${id}`).html(html + oldHtml)
+                        }
+                    }
+                })
+
             } else {
                 alert(data.msg)
             }

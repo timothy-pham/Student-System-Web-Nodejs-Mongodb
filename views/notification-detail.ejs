@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Font Awesome JS -->
+    <script defer src="https://use.fontawesome.com/releases/v5.0.13/js/solid.js"
+        integrity="sha384-tzzSw1/Vo+0N5UhStP3bvwWPq+uvzCMfrN1fEFe+xBmv1C/AtVX5K0uZtmcHitFZ"
+        crossorigin="anonymous"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.0.13/js/fontawesome.js"
+        integrity="sha384-6OIrr52G08NpOFSZdxxz1xdNSndlD4vdcf/q2myIUVO0VsqaGHJsB0RaBE01VTOY"
+        crossorigin="anonymous"></script>
+    <!-- Bootstrap CSS CDN -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css"
+        integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/javascripts/main.js"></script>
+    <link rel="stylesheet" href="/stylesheets/style.css">
+    <title>Chi tiết thông báo</title>
+</head>
+
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-2 index-left px-0">
+                <nav id="sidebar" class="h-100">
+                    <div class="sidebar-header">
+                        <h3>FINAL WEB</h3>
+                    </div>
+                    <ul class="list-unstyled components">
+                        <li>
+                            <a href="/" data-toggle="collapse" aria-expanded="false">
+                                <i class="fas fa-home"></i>
+                                Trang chủ
+                            </a>
+                        </li>
+                        <li class="active">
+                            <a href="/setting">
+                                <i class="fas fa-users"></i>
+                                Cá nhân
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/notification">
+                                <i class="fas fa-bell"></i>
+                                Thông báo
+                            </a>
+                        </li>
+                        <li>
+                            <a href="" onclick="logout()">
+                                <i class="fas fa-sign-out-alt"></i>Đăng xuất
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+            <div class="col col-md-10">
+                <div id="content">
+                    <div class="new-notification-2">
+                        <div class="new-notification">
+                        </div>
+                    </div>
+                    <nav class="navbar navbar-expand-lg navbar-light bg-info tool-header">
+                        <div class="container-fluid">
+                            <button class="btn btn-dark d-inline-block d-lg-none ml-auto" type="button"
+                                data-toggle="collapse" data-target="#navbarSupportedContent"
+                                aria-controls="navbarSupportedContent" aria-expanded="false"
+                                aria-label="Toggle navigation">
+                                <i class="fas fa-align-justify"></i>
+                            </button>
+                            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                                <ul class="nav navbar-nav ml-auto">
+                                    <li class="nav-item">
+                                        <a class="nav-link active" href="/">Trang chủ</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link active" href="/notification">Thông báo</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link active" href="" onclick="logout()">Đăng xuất</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="/setting">
+                                            <div class="user-avatar">
+                                                <img src="<%= user.avatar %>">
+                                            </div>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </nav>
+                    <div class="bg-dark p-2 mt-3 notice-detail-header">
+                        <h5 class="text-white">CHI TIẾT THÔNG BÁO</h5>
+                    </div>
+                    <div class="center-item border border-3 mt-3 rounded rounded-3">
+                        <!-- DETAIL -->
+                        <div class="notice-detail">
+                            <div class="detail-box bg-white">
+                                <div class="title text-uppercase text-center my-3">
+                                    <%= notification.title %>
+                                </div>
+                                <div class="date-time text-right mx-4">
+                                    <%= notification.category %>&nbsp;- <%=notification.createTime.split(',')[0] %>
+                                </div>
+                                <div class="summary mt-3 mx-4">
+                                    <%= notification.summary %>
+                                </div>
+                                <div class="detail my-3 mx-4">
+                                    <%= notification.detail %>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+</body>
+
+</html>

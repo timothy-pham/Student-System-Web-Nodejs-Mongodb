@@ -36,6 +36,7 @@ function checkStudent(req, res, next) {
 }
 
 router.get('/', checkLogin, (req, res) => {
+    console.log(req.data)
     res.render('student', { student: req.data })
 })
 

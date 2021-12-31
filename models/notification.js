@@ -28,7 +28,9 @@ const Notification = new mongoose.Schema({
         type: String
     }
 })
+// for (let i = 0; i < 50; i++) {
+//     mongoose.model('Notification', Notification).create({ title: "Tiêu đề " + i, summary: "Tóm tắt " + i, detail: "Chi tiết " + i, createAt: Date.now(), category: "Phòng điện toán và máy tính" })
+// }
 
-//mongoose.model('Notification', Notification).create({ notification: "TEST" })
 
 module.exports = mongoose.model('Notification', Notification)

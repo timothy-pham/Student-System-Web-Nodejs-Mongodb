@@ -30,39 +30,6 @@ function checkLogin(req, res, next) {
         return res.redirect('/login')
     }
 }
-
-router.get('/posts/:p?', checkLogin, (req, res) => {
-    let p = req.params.p
-    if (p >= 1) {
-        p = p * 10
-    }
-    Posts.find().sort({ createAt: -1 }).skip(p).limit(10).then(data => {
-        var posts = [];
-        for (let i = 0; i < data.length; i++) {
-            posts.push(data[i])
-        }
-        res.json({ posts: posts, status: 'success' })
-    }).catch(err => {
-        console.log(err)
-        res.json({ status: err })
-    })
-})
-
-router.post('/comments', checkLogin, (req, res) => {
-
-    Comments.find({ postId: req.body.postId }).sort({ createAt: -1 }).then(data => {
-        var comments = [];
-        for (let i = 0; i < data.length; i++) {
-            comments.push(data[i])
-        }
-        res.json({ comments: comments, status: 'success' })
-    }).catch(err => {
-        console.log(err)
-        res.json({ status: err })
-    })
-})
-
-
 router.get('/', checkLogin, (req, res) => {
     Notifications.find().sort({ createAt: -1 }).then(data => {
         var notification = [];
@@ -82,6 +49,71 @@ router.get('/', checkLogin, (req, res) => {
     }).catch(err => {
         console.log(err)
         res.render('index')
+    })
+})
+
+router.get('/setting', checkLogin, (req, res) => {
+    var roles = req.data.roles
+    if (roles === 'admin') {
+        res.redirect('/admin')
+    } else if (roles === 'manager') {
+        res.redirect('/manager')
+    } else {
+        res.redirect('/student')
+    }
+})
+
+router.post('/getUser', checkLogin, (req, res) => {
+    Users.findOne({ _id: req.body.userId }).then(data => {
+        res.json({ user: data, success: true })
+    }).catch(err => {
+        console.log(err)
+        res.json({ msg: err, success: false })
+    })
+})
+router.get('/posts/:p?', checkLogin, (req, res) => {
+    let p = req.params.p
+    if (p >= 1) {
+        p = p * 10
+    }
+    Posts.find().sort({ createAt: -1 }).skip(p).limit(10).then(data => {
+        var posts = [];
+        for (let i = 0; i < data.length; i++) {
+            posts.push(data[i])
+        }
+        res.json({ posts: posts, status: 'success' })
+    }).catch(err => {
+        console.log(err)
+        res.json({ status: err })
+    })
+})
+router.post('/comments', checkLogin, (req, res) => {
+
+    Comments.find({ postId: req.body.postId }).sort({ createAt: -1 }).then(data => {
+        var comments = [];
+        for (let i = 0; i < data.length; i++) {
+            comments.push(data[i])
+        }
+        res.json({ comments: comments, status: 'success' })
+    }).catch(err => {
+        console.log(err)
+        res.json({ status: err })
+    })
+})
+router.get('/notifications/:p?', checkLogin, (req, res) => {
+    let p = req.params.p
+    if (p >= 1) {
+        p = p * 10
+    }
+    Notifications.find().sort({ createAt: -1 }).skip(p).limit(10).then(data => {
+        var notifications = [];
+        for (let i = 0; i < data.length; i++) {
+            notifications.push(data[i])
+        }
+        res.json({ notifications: notifications, status: 'success' })
+    }).catch(err => {
+        console.log(err)
+        res.json({ status: err })
     })
 })
 
@@ -131,6 +163,7 @@ router.post('/addPost', checkLogin, (req, res) => {
         video: video,
         user: req.data._id,
         fullname: req.data.fullname,
+        avatar: req.data.avatar,
         createAt: Date.now()
     })
     post.save((error, postResult) => {
@@ -189,7 +222,10 @@ router.put('/updateCaption', checkLogin, (req, res) => {
         }
     })
 })
-
+const fs = require('fs')
+const { promisify } = require('util')
+const unlinkAsync = promisify(fs.unlink)
+//unlinkAsync(oldImg)
 //Xoá bài
 router.delete('/deletePost', checkLogin, (req, res) => {
     Posts.deleteOne({ _id: new ObjectId(req.body._id), user: req.data._id.toString() }, function (err, obj) {
@@ -197,7 +233,6 @@ router.delete('/deletePost', checkLogin, (req, res) => {
             console.log(err)
             return res.json({ success: false, msg: "Xoá bài viết thất bại" })
         }
-        console.log(obj)
         if (obj.deletedCount === 1) {
             return res.json({ success: true })
         } else {
@@ -237,13 +272,12 @@ router.post('/addComment', checkLogin, (req, res) => {
     let comment = req.body.comment
     let postId = req.body.postId
 
-    console.log(req.body)
-
     let newComment = new Comments({
         comment: comment,
         postId: postId,
         user: req.data._id,
         fullname: req.data.fullname,
+        avatar: req.data.avatar,
         createAt: Date.now()
     })
     newComment.save((error, notiResult) => {
